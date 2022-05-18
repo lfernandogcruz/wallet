@@ -24,7 +24,7 @@ class Login extends React.Component {
     const emailCheck = () => {
         const re = /\S+@\S+\.\S+/;
         return re.test(email);
-    };
+    }; // REFERÊNCIA AO regex UTILIZADO NO FINAL DO ARQUIVO.
     // A senha possui 6 ou mais caracteres.
     const passwordCheck = password.length > 5;
     // console.log('pass', passwordCheck);
@@ -92,3 +92,13 @@ Login.propTypes = {
   userForm: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
 };
+
+// REFERÊNCIA:
+// - Regex para verificação de email válido postado no canal do Slack da tribo A,
+// por Caio Galvão (t20-A), dia 18 de maio de 2022 às 15:08, contendo também
+// link para o tópico do Stackoverflow consultado.
+// Links abaixo:
+// - thread:
+// https://trybecourse.slack.com/archives/C02T5FNGN07/p1652897297121379
+// - Stackoverflow:
+// https://stackoverflow.com/a/48800/4832311
