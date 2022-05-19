@@ -4,16 +4,17 @@ const INITIAL_STATE = {
   expenses: [],
 };
 
-export const walletReducer = (store = INITIAL_STATE, action) => {
+const walletReducer = (store = INITIAL_STATE, action) => {
   switch (action.type) {
-    case 'WALLET_ACTION':
-      return {
-        ...store,
-        ...action.payload,
-      };
-    default:
-      return store;
+  case 'WALLET_ACTION':
+    return {
+      ...store,
+      currencies: action.payload,
+      expenses: action.payload,
+    };
+  default:
+    return store;
   }
 };
 
-// export default { walletReducer };
+export default walletReducer;

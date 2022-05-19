@@ -12,36 +12,44 @@ class Login extends React.Component {
       btnDisabled: true,
     };
 
-    this.history = props.history;
+    // this.history = props.history;
 
     this.handleChange = this.handleChange.bind(this);
     this.btnOnOff = this.btnOnOff.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   btnOnOff() {
+    const FIVE = 5;
     const { password, email } = this.state;
     // O email está no formato válido, como 'alguem@alguem.com'.
-    const emailCheck = () => {
-        const re = /\S+@\S+\.\S+/;
-        return re.test(email);
+    const emailCheck = (toBeChecked) => {
+      const re = /\S+@\S+\.\S+/;
+      return re.test(toBeChecked);
     }; // REFERÊNCIA AO regex UTILIZADO NO FINAL DO ARQUIVO.
     // A senha possui 6 ou mais caracteres.
-    const passwordCheck = password.length > 5;
-    // console.log('pass', passwordCheck);
-    // console.log('email', emailCheck());
-    return passwordCheck && emailCheck() ? false : true;
+    const passwordCheck = password.length > FIVE;
+    if (passwordCheck && emailCheck(email)) {
+      this.setState({ btnDisabled: false });
+    } else {
+      this.setState({ btnDisabled: true });
+    }
   }
 
   handleChange({ target }) {
     const { name, value } = target;
-    this.setState({ [name]: value }, () => {
-      this.setState({ btnDisabled: this.btnOnOff() })
-    });
+    this.setState({ [name]: value }, () => this.btnOnOff());
+  }
+
+  handleClick() {
+    const { userForm, history } = this.props;
+    const { email } = this.state;
+    userForm(email);
+    history.push('/carteira');
   }
 
   render() {
     const { password, email, btnDisabled } = this.state;
-    const { userForm } = this.props;
 
     return (
       <form>
@@ -49,8 +57,8 @@ class Login extends React.Component {
           <input
             type="email"
             data-testid="email-input"
-            onChange={this.handleChange}
-            value={email}
+            onChange={ this.handleChange }
+            value={ email }
             name="email"
             required
           />
@@ -59,8 +67,8 @@ class Login extends React.Component {
           <input
             type="password"
             data-testid="password-input"
-            onChange={this.handleChange}
-            value={password}
+            onChange={ this.handleChange }
+            value={ password }
             name="password"
             required
           />
@@ -68,12 +76,10 @@ class Login extends React.Component {
         <button
           type="button"
           label="Enviar"
-          disabled={btnDisabled}
-          onClick={() => {
-            userForm(this.state);
-            this.history.push('/carteira');
-          }}
-        >Entrar
+          disabled={ btnDisabled }
+          onClick={ () => this.handleClick() }
+        >
+          Entrar
         </button>
       </form>
     );

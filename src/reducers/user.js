@@ -3,16 +3,16 @@ const INITIAL_STATE = {
   email: '',
 };
 
-export const userReducer = (store = INITIAL_STATE, action) => {
+const userReducer = (store = INITIAL_STATE, action) => {
   switch (action.type) {
-    case 'USER_ACTION':
-      return {
-        ...store,
-        ...action.payload,
-      };
-    default:
-      return store;
+  case 'USER_ACTION':
+    return {
+      ...store,
+      email: action.payload,
+    };
+  default:
+    return store;
   }
 };
 
-// export default userReducer;
+export default userReducer;

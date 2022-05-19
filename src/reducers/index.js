@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 
-import { userReducer } from './user';
-import { walletReducer } from './wallet';
+import userReducer from './user';
+import walletReducer from './wallet';
 
 // Configure os seus reducers.
 // ATENÇÃO: você obrigatoriamente tem que utilizar as
