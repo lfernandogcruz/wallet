@@ -9,7 +9,7 @@ class Header extends Component {
       <header>
         {/* O elemento com o 'data-testid="email-field"' renderiza o email
         salvo no estado global. */}
-        <p data-testid="email-field">{Object.entries(email)}</p>
+        <p data-testid="email-field">{ Object.entries(email) }</p>
         {/* O elemento com o 'data-testid="total-field"' inicialmente
         renderiza o valor "0". */}
         <p data-testid="total-field">0</p>
