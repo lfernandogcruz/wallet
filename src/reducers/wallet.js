@@ -2,6 +2,9 @@
 const INITIAL_STATE = {
   currencies: [],
   expenses: [],
+  rates: {},
+  idCounter: 0,
+  totalSum: 0,
 };
 
 const walletReducer = (store = INITIAL_STATE, action) => {
@@ -17,10 +20,25 @@ const walletReducer = (store = INITIAL_STATE, action) => {
       ...store,
       currencies: action.payload,
     };
+  case 'RATES_ACTION':
+    return {
+      ...store,
+      rates: action.payload,
+    };
   case 'EXPENSES_ACTION':
     return {
       ...store,
-      expenses: action.payload,
+      expenses: [...store.expenses, action.payload],
+    };
+  case 'ID_COUNTER_ACTION':
+    return {
+      ...store,
+      idCounter: action.payload,
+    };
+  case 'TOTAL_SUM_ACTION':
+    return {
+      ...store,
+      totalSum: action.payload,
     };
   default:
     return store;
