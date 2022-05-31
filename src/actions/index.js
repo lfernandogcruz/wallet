@@ -34,6 +34,11 @@ export const totalSumAction = (state) => ({
   payload: state,
 });
 
+export const editExpensesAction = (state) => ({
+  type: 'EDIT_EXPENSES_ACTION',
+  payload: state,
+});
+
 export const fetchCurrencies = () => async (dispatch) => {
   try {
     const response = await fetch('https://economia.awesomeapi.com.br/json/all');

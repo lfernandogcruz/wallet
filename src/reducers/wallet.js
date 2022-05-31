@@ -7,10 +7,9 @@ const INITIAL_STATE = {
 
 const walletReducer = (store = INITIAL_STATE, action) => {
   switch (action.type) {
-  case 'WALLET_ACTION':
+  case 'EDIT_EXPENSES_ACTION':
     return {
       ...store,
-      currencies: action.payload,
       expenses: action.payload,
     };
   case 'CURRENCIES_ACTION':
