@@ -12,8 +12,8 @@ class ExpensesForm extends Component {
       value: '',
       description: '',
       currency: 'USD',
-      method: 'dinheiro',
-      tag: 'alimentacao',
+      method: 'Dinheiro',
+      tag: 'Alimentação',
       exchangeRates: {},
     };
   }
