@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 // import CurrenciesOptions from './CurrenciesOptions';
 import PropTypes from 'prop-types';
-import { expensesAction, fetchRates, updateIdAction, totalSumAction } from '../actions';
+import { expensesAction, fetchRates } from '../actions';
 
 class ExpensesForm extends Component {
   constructor(props) {
@@ -15,13 +15,7 @@ class ExpensesForm extends Component {
       method: 'dinheiro',
       tag: 'alimentacao',
       exchangeRates: {},
-      totalSum: 0,
     };
-  }
-
-  componentDidMount() {
-    const { idCount } = this.props;
-    this.setState({ id: idCount });
   }
 
   handleChange = ({ target }) => {
@@ -39,58 +33,16 @@ class ExpensesForm extends Component {
   }
 
   expenseSetup = () => {
-    const { id,
-      value,
-      description,
-      currency,
-      method,
-      tag,
-      exchangeRates } = this.state;
-    const liveConvertion = value * exchangeRates[currency].ask;
-    const expenseObj = {
-      id,
-      value,
-      description,
-      currency,
-      method,
-      tag,
-      exchangeRates,
-      liveConvertion,
-    };
     const { sendExpenses } = this.props;
-    sendExpenses(expenseObj);
+    sendExpenses(this.state);
+    this.updateCounter();
   }
 
   updateCounter = () => {
-    const { addToIdCounter } = this.props;
     this.setState((prevState) => ({
       id: prevState.id + 1,
-    }), () => {
-      const { id } = this.state;
-      addToIdCounter(id);
-    });
-  }
-
-  calculateTotalSum = () => {
-    const { expenses } = this.props;
-    if (!expenses.length) {
-      return;
-    }
-    // expenses.forEach((expense) => {
-    //   this.setState((prevState) => ({
-    //     totalSum: prevState.totalSum + expense.liveConvertion,
-    //   }), () => {
-    //     sendTotalSum(totalSum);
-    //   });
-    // });
-    const calcSum = expenses.reduce((acc, curr) => acc + curr.liveConvertion, 0);
-    // console.log(expenses);
-    // console.log(totalSum);
-    this.setState({ totalSum: calcSum }, () => {
-      const { sendTotalSum } = this.props;
-      const { totalSum } = this.state;
-      sendTotalSum(totalSum.toFixed(2));
-    });
+    }));
+    this.resetInputs();
   }
 
   handleClick = async () => {
@@ -100,11 +52,7 @@ class ExpensesForm extends Component {
     this.setState({
       exchangeRates: ratesList,
     }, () => {
-      // console.log(this.state);
       this.expenseSetup();
-      this.updateCounter();
-      this.resetInputs();
-      this.calculateTotalSum();
     });
   };
 
@@ -113,7 +61,7 @@ class ExpensesForm extends Component {
     const { currenciesList } = this.props;
     return (
       <form>
-        <label htmlFor="valor">
+        <label htmlFor="value">
           valor
           <input
             type="number"
@@ -124,7 +72,7 @@ class ExpensesForm extends Component {
             onChange={ this.handleChange }
           />
         </label>
-        <label htmlFor="moedas">
+        <label htmlFor="currency">
           moeda
           <select
             name="moedas"
@@ -138,7 +86,7 @@ class ExpensesForm extends Component {
             }
           </select>
         </label>
-        <label htmlFor="metodo">
+        <label htmlFor="method">
           método de pagamento
           <select
             name="metodo"
@@ -146,9 +94,9 @@ class ExpensesForm extends Component {
             id="method"
             onChange={ this.handleChange }
           >
-            <option value="dinheiro">Dinheiro</option>
-            <option value="credito">Cartão de crédito</option>
-            <option value="debito">Cartão de débito</option>
+            <option value="Dinheiro">Dinheiro</option>
+            <option value="Cartão de crédito">Cartão de crédito</option>
+            <option value="Cartão de débito">Cartão de débito</option>
           </select>
         </label>
         <label htmlFor="tag">
@@ -159,14 +107,14 @@ class ExpensesForm extends Component {
             id="tag"
             onChange={ this.handleChange }
           >
-            <option value="alimentacao">Alimentação</option>
-            <option value="lazer">Lazer</option>
-            <option value="trabalho">Trabalho</option>
-            <option value="transporte">Transporte</option>
-            <option value="saude">Saúde</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Lazer">Lazer</option>
+            <option value="Trabalho">Trabalho</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Saúde">Saúde</option>
           </select>
         </label>
-        <label htmlFor="descricao">
+        <label htmlFor="description">
           descrição
           <input
             type="text"
@@ -194,49 +142,23 @@ class ExpensesForm extends Component {
 const mapStateToProps = (state) => ({
   currenciesList: state.wallet.currencies,
   ratesList: state.wallet.rates,
-  idCount: state.wallet.idCounter,
   expenses: state.wallet.expenses,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setRates: () => dispatch(fetchRates()),
-  addToIdCounter: (state) => dispatch(updateIdAction(state)),
   sendExpenses: (state) => dispatch(expensesAction(state)),
-  sendTotalSum: (state) => dispatch(totalSumAction(state)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ExpensesForm);
 
-ExpensesForm.propTypes = {
-  currenciesList: PropTypes.arrayOf(PropTypes.string).isRequired,
-  ratesList: PropTypes.objectOf(PropTypes.shape()).isRequired,
-  setRates: PropTypes.func.isRequired,
-  idCount: PropTypes.number.isRequired,
-  addToIdCounter: PropTypes.func.isRequired,
-  sendExpenses: PropTypes.func.isRequired,
-  sendTotalSum: PropTypes.func.isRequired,
-  expenses: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+ExpensesForm.defaultProps = {
+  ratesList: {},
 };
 
-// expenses: [{
-//   "id": 0,
-//   "value": "3",
-//   "description": "Hot Dog",
-//   "currency": "USD",
-//   "method": "Dinheiro",
-//   "tag": "Alimentação",
-//   "exchangeRates": {
-//     "USD": {
-//       "code": "USD",
-//       "name": "Dólar Comercial",
-//       "ask": "5.6208",
-//       ...
-//     },
-//     "CAD": {
-//       "code": "CAD",
-//       "name": "Dólar Canadense",
-//       "ask": "4.2313",
-//       ...
-//     },
-//   }
-// }]
+ExpensesForm.propTypes = {
+  currenciesList: PropTypes.arrayOf(PropTypes.string).isRequired,
+  ratesList: PropTypes.objectOf(PropTypes.shape()),
+  setRates: PropTypes.func.isRequired,
+  sendExpenses: PropTypes.func.isRequired,
+};

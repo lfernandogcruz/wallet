@@ -3,8 +3,6 @@ const INITIAL_STATE = {
   currencies: [],
   expenses: [],
   rates: {},
-  idCounter: 0,
-  totalSum: 0,
 };
 
 const walletReducer = (store = INITIAL_STATE, action) => {

@@ -49,12 +49,11 @@ export const fetchRates = () => async (dispatch) => {
   try {
     const response = await fetch('https://economia.awesomeapi.com.br/json/all');
     const result = await response.json();
-    const filtered = Object.keys(result).filter((key) => key !== 'USDT');
-    const remount = filtered.reduce((acc, curr) => {
-      acc[curr] = result[curr];
-      return acc;
-    }, {});
-    dispatch(ratesAction(remount));
+    // const remount = result.reduce((acc, curr) => {
+    //   acc[curr] = result[curr];
+    //   return acc;
+    // }, {});
+    dispatch(ratesAction(result));
   } catch (error) {
     console.log(error);
   }
