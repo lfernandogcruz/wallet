@@ -11,13 +11,3 @@ const store = createStore(
 );
 
 export default store;
-
-// {
-//   user: {
-//     email: '',
-//   },
-//   wallet: {
-//     currencies: [],
-//     expenses: []
-//   }
-// }

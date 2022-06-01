@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 // import CurrenciesOptions from './CurrenciesOptions';
 import PropTypes from 'prop-types';
-import { expensesAction, fetchRates } from '../actions';
+import { expensesAction, fetchRates,
+  editExpensesAction, editButtonAction, editFormAction } from '../actions';
+
+const ALIMENTACAO = 'Alimentação';
 
 class ExpensesForm extends Component {
   constructor(props) {
@@ -13,7 +16,7 @@ class ExpensesForm extends Component {
       description: '',
       currency: 'USD',
       method: 'Dinheiro',
-      tag: 'Alimentação',
+      tag: ALIMENTACAO,
       exchangeRates: {},
     };
   }
@@ -29,6 +32,10 @@ class ExpensesForm extends Component {
     this.setState({
       value: '',
       description: '',
+      currency: 'USD',
+      method: 'Dinheiro',
+      tag: ALIMENTACAO,
+      exchangeRates: {},
     });
   }
 
@@ -56,9 +63,58 @@ class ExpensesForm extends Component {
     });
   };
 
+  handleEdit = () => {
+    const {
+      editFormContent, editExpenses, editButtonFunc, expenses, editForm,
+    } = this.props;
+    const { id, exchangeRates } = editFormContent;
+    const { value, description, currency, method, tag } = this.state;
+    const editedExpense = {
+      id,
+      value,
+      description,
+      currency,
+      method,
+      tag,
+      exchangeRates,
+    };
+    const newExpenses = expenses.filter((expense) => expense.id !== id);
+    newExpenses.push(editedExpense);
+    newExpenses.sort((a, b) => a.id - b.id);
+    editExpenses(newExpenses);
+    editButtonFunc(false);
+    this.resetInputs();
+    editForm({});
+  }
+
   render() {
     const { value, description } = this.state;
-    const { currenciesList } = this.props;
+    // const { value, description, currency, method, tag } = this.state;
+    const { currenciesList, editButton } = this.props;
+    // const { editFormContent } = this.props;
+    // const {
+    //   value: valueEdit, description: descriptionEdit, currency: currencyEdit,
+    //   method: methodEdit, tag: tagEdit,
+    // } = editFormContent;
+    const buttonAdd = (
+      <button
+        type="button"
+        name="adicionar"
+        onClick={ () => this.handleClick() }
+      >
+        Adicionar despesa
+      </button>
+    );
+    const buttonEdit = (
+      <button
+        type="button"
+        name="editar"
+        onClick={ () => this.handleEdit() }
+      >
+        Editar despesa
+      </button>
+    );
+
     return (
       <form>
         <label htmlFor="value">
@@ -69,6 +125,7 @@ class ExpensesForm extends Component {
             data-testid="value-input"
             id="value"
             value={ value }
+            // value={ editButton ? valueEdit : value }
             onChange={ this.handleChange }
           />
         </label>
@@ -78,10 +135,12 @@ class ExpensesForm extends Component {
             name="moedas"
             id="currency"
             onChange={ this.handleChange }
+            // value={ currency }
+            // value={ editButton ? currencyEdit : currency }
           >
             {
-              currenciesList.map((currency) => (
-                <option value={ currency } key={ currency }>{ currency }</option>
+              currenciesList.map((curr) => (
+                <option value={ curr } key={ curr }>{ curr }</option>
               ))
             }
           </select>
@@ -93,6 +152,8 @@ class ExpensesForm extends Component {
             data-testid="method-input"
             id="method"
             onChange={ this.handleChange }
+            // value={ method }
+            // value={ editButton ? methodEdit : method }
           >
             <option value="Dinheiro">Dinheiro</option>
             <option value="Cartão de crédito">Cartão de crédito</option>
@@ -106,8 +167,10 @@ class ExpensesForm extends Component {
             data-testid="tag-input"
             id="tag"
             onChange={ this.handleChange }
+            // value={ tag }
+            // value={ editButton ? tagEdit : tag }
           >
-            <option value="Alimentação">Alimentação</option>
+            <option value={ ALIMENTACAO }>Alimentação</option>
             <option value="Lazer">Lazer</option>
             <option value="Trabalho">Trabalho</option>
             <option value="Transporte">Transporte</option>
@@ -122,38 +185,37 @@ class ExpensesForm extends Component {
             data-testid="description-input"
             id="description"
             value={ description }
+            // value={ editButton ? descriptionEdit : description }
             onChange={ this.handleChange }
           />
         </label>
-        <button
-          type="button"
-          name="adicionar"
-          onClick={ () => this.handleClick() }
-        >
-          Adicionar despesa
-        </button>
+        { editButton ? buttonEdit : buttonAdd }
       </form>
     );
   }
 }
 
-// export default ExpensesForm;
-
 const mapStateToProps = (state) => ({
   currenciesList: state.wallet.currencies,
   ratesList: state.wallet.rates,
   expenses: state.wallet.expenses,
+  editButton: state.edit.editBtn,
+  editFormContent: state.edit.editForm,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setRates: () => dispatch(fetchRates()),
   sendExpenses: (state) => dispatch(expensesAction(state)),
+  editExpenses: (state) => dispatch(editExpensesAction(state)),
+  editButtonFunc: (state) => dispatch(editButtonAction(state)),
+  editForm: (state) => dispatch(editFormAction(state)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ExpensesForm);
 
 ExpensesForm.defaultProps = {
   ratesList: {},
+  editFormContent: {},
 };
 
 ExpensesForm.propTypes = {
@@ -161,4 +223,10 @@ ExpensesForm.propTypes = {
   ratesList: PropTypes.objectOf(PropTypes.shape()),
   setRates: PropTypes.func.isRequired,
   sendExpenses: PropTypes.func.isRequired,
+  editButton: PropTypes.bool.isRequired,
+  editFormContent: PropTypes.shape(),
+  editExpenses: PropTypes.func.isRequired,
+  editButtonFunc: PropTypes.func.isRequired,
+  editForm: PropTypes.func.isRequired,
+  expenses: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };

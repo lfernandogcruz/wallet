@@ -39,6 +39,16 @@ export const editExpensesAction = (state) => ({
   payload: state,
 });
 
+export const editButtonAction = (state) => ({
+  type: 'EDIT_BTN_ACTION',
+  payload: state,
+});
+
+export const editFormAction = (state) => ({
+  type: 'EDIT_FORM_ACTION',
+  payload: state,
+});
+
 export const fetchCurrencies = () => async (dispatch) => {
   try {
     const response = await fetch('https://economia.awesomeapi.com.br/json/all');

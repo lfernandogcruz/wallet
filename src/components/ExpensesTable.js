@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { editExpensesAction } from '../actions';
+import { editExpensesAction, editFormAction, editButtonAction } from '../actions';
 
 class ExpensesTable extends Component {
   deleteExpense = (it) => {
     const { expenses, editExpenses } = this.props;
     const newExpenses = expenses.filter((expense) => expense.id !== it);
     editExpenses(newExpenses);
+  };
+
+  editExpense = (it) => {
+    const { expenses, editForm, editButton } = this.props;
+    const editThisExpense = expenses.filter((expense) => expense.id === it)[0];
+    editForm(editThisExpense);
+    editButton(true);
   };
 
   render() {
@@ -38,7 +45,10 @@ class ExpensesTable extends Component {
             const currencyName = expense.exchangeRates[expense.currency].name;
             const splitName = currencyName.split('/Real Brasileiro');
             return (
-              <tr key={ expense.id }>
+              <tr
+                key={ expense.id }
+                className={ `table-row-${expense.id}` }
+              >
                 <td>{ expense.description }</td>
                 <td>{ expense.tag }</td>
                 <td>{ expense.method }</td>
@@ -48,7 +58,13 @@ class ExpensesTable extends Component {
                 <td>{ fixedExchangedValue }</td>
                 <td>Real</td>
                 <td>
-                  <button type="button">Editar</button>
+                  <button
+                    type="button"
+                    data-testid="edit-btn"
+                    onClick={ () => this.editExpense(expense.id) }
+                  >
+                    Editar
+                  </button>
                   <button
                     type="button"
                     data-testid="delete-btn"
@@ -72,6 +88,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   editExpenses: (state) => dispatch(editExpensesAction(state)),
+  editForm: (state) => dispatch(editFormAction(state)),
+  editButton: (state) => dispatch(editButtonAction(state)),
 });
 
 ExpensesTable.defaultProps = {
@@ -81,6 +99,8 @@ ExpensesTable.defaultProps = {
 ExpensesTable.propTypes = {
   expenses: PropTypes.arrayOf(PropTypes.shape()),
   editExpenses: PropTypes.func.isRequired,
+  editForm: PropTypes.func.isRequired,
+  editButton: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ExpensesTable);
